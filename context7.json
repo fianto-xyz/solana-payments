@@ -1,0 +1,18 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "@fianto/solana-payments",
+  "description": "TypeScript library on @solana/kit that builds USDC payment and Solana Subscriptions program transactions and validates the signed transactions a wallet returns, before broadcast or co-signing. Also renders and verifies Sign-In With Solana (SIWS) messages, classifies RPC failures and formats USDC amounts as bigint.",
+  "folders": ["src", "examples"],
+  "excludeFolders": [".github", ".changeset", "scripts", "dist", "node_modules", "src/testdata"],
+  "excludeFiles": ["CHANGELOG.md", "CLAUDE.md"],
+  "rules": [
+    "Import from @fianto/solana-payments, @fianto/solana-payments/subscriptions or @fianto/solana-payments/money.",
+    "Amounts are bigint base units: USDC has 6 decimals, so 25.00 USDC is 25_000_000n. Use parseUsdcAmount and formatUsdcAmount to convert.",
+    "Validate the signed transaction against the same expectation object you built it from.",
+    "Validators return { ok: true } or { ok: false, reason } and do not throw; branch on reason.",
+    "Run validateSignedPayment, validateSignedSubscribe or validateSignedPayerAction before broadcasting or co-signing a transaction a wallet returned.",
+    "Use verifyWalletSignature for Ed25519 wallet signatures: it rejects small-order and non-canonical public keys.",
+    "The /subscriptions entry point needs the @solana/subscriptions peer dependency; the other entry points do not.",
+    "Peer dependencies: @solana/kit ^8.3, @solana-program/token ^0.16, @solana-program/compute-budget ^0.18."
+  ]
+}

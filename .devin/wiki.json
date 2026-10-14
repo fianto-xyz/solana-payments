@@ -1,0 +1,19 @@
+{
+  "repo_notes": [
+    {
+      "content": "@fianto/solana-payments is a TypeScript library on @solana/kit. It builds USDC payment transactions and Solana Subscriptions program transactions, and validates the signed transactions a wallet returns before they are broadcast or co-signed. Entry points: src/index.ts (package root), src/subscriptions/index.ts (/subscriptions) and src/money/index.ts (/money). Tests sit beside their sources as *.test.ts. Runnable examples are in examples/. README.md is the user guide."
+    },
+    {
+      "content": "Validators (validateSignedPayment, validateSignedSubscribe, validateSignedPayerAction, verifyCoSignedTransaction) return { ok: true } or { ok: false, reason } and never throw. Each reason is a string literal in a union type next to the function, e.g. PaymentValidationFailure in src/payment-transaction.ts. Amounts are bigint base units."
+    }
+  ],
+  "pages": [
+    { "title": "Overview", "purpose": "What the library does, its three entry points, peer dependencies and runtime support (README.md, package.json)." },
+    { "title": "One-time USDC payments", "purpose": "buildPaymentTransaction and validateSignedPayment in src/payment-transaction.ts: the transaction layout, the expectation object and every refusal reason." },
+    { "title": "Co-signed transactions", "purpose": "verifyCoSignedTransaction in src/co-signed-transaction.ts and the account-list and signer-role checks in validateSignedSubscribe." },
+    { "title": "Wallet signatures and Sign-In With Solana", "purpose": "verifyWalletSignature in src/wallet-signature.ts (forgeable key rejection) and renderSiwsMessage, siwsChainId and nonceOfSiwsMessage in src/siws.ts." },
+    { "title": "Subscriptions", "purpose": "The /subscriptions entry point in src/subscriptions/: plan, subscribe, charge and payer-action transactions, account decoders, address derivation and program errors." },
+    { "title": "Money", "purpose": "The /money entry point in src/money/: USDC and SOL bigint parsing and formatting, basis-point fees and percent formatting." },
+    { "title": "RPC and token-account helpers", "purpose": "RPC failure classification (src/rpc-transport-failure.ts, src/preflight-failure.ts, src/transaction-errors.ts), associated token addresses, token-account reads and AccountBatcher." }
+  ]
+}

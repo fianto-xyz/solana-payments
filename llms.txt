@@ -1,0 +1,35 @@
+# @fianto/solana-payments
+
+> TypeScript library on @solana/kit that builds USDC payment and Solana Subscriptions program transactions and validates the signed transactions a wallet returns, before broadcast or co-signing. It also renders and verifies Sign-In With Solana (SIWS) messages. MIT licensed.
+
+Three entry points: `@fianto/solana-payments` (payments, SIWS, RPC helpers), `@fianto/solana-payments/subscriptions` (Solana Subscriptions program) and `@fianto/solana-payments/money` (bigint amounts). Amounts are bigint base units. Validators return `{ ok: true }` or `{ ok: false, reason }` and do not throw.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/README.md): install, a 30-second example, questions and answers per function, recipes and compatibility
+- [CHANGELOG](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/CHANGELOG.md): release notes
+- [SECURITY](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/SECURITY.md): how to report a vulnerability
+
+## Examples
+
+- [pay-usdc.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/examples/pay-usdc.ts): build a USDC payment, sign it and validate the signed transaction
+- [sign-in-with-solana.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/examples/sign-in-with-solana.ts): render a SIWS message and verify its signature
+- [subscription-accounts.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/examples/subscription-accounts.ts): derive plan, authority and subscription addresses
+
+## Source
+
+- [src/index.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/index.ts): root entry point exports
+- [src/payment-transaction.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/payment-transaction.ts): buildPaymentTransaction, validateSignedPayment and its refusal reasons
+- [src/co-signed-transaction.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/co-signed-transaction.ts): verifyCoSignedTransaction
+- [src/wallet-signature.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/wallet-signature.ts): verifyWalletSignature
+- [src/siws.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/siws.ts): renderSiwsMessage, siwsChainId, nonceOfSiwsMessage
+- [src/subscriptions/index.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/subscriptions/index.ts): /subscriptions entry point exports
+- [src/subscriptions/subscribe-transaction.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/subscriptions/subscribe-transaction.ts): buildSubscribeTransaction, validateSignedSubscribe
+- [src/money/index.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/money/index.ts): /money entry point exports
+
+## Optional
+
+- [src/rpc-transport-failure.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/rpc-transport-failure.ts): isTransportFailure, describeRpcFailure
+- [src/subscriptions/payer-transactions.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/subscriptions/payer-transactions.ts): payer cancel, revoke and re-authorize
+- [src/subscriptions/charge-transaction.ts](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/src/subscriptions/charge-transaction.ts): buildChargeTransaction
+- [CONTRIBUTING](https://raw.githubusercontent.com/fianto-xyz/solana-payments/master/CONTRIBUTING.md): how to contribute

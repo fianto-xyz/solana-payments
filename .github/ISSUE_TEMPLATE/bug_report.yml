@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in @fianto/solana-payments does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Found a security problem? Do not open an issue. Report it privately under **Security → Report a vulnerability**.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: entry
+    attributes:
+      label: Entry point
+      options:
+        - "@fianto/solana-payments"
+        - "@fianto/solana-payments/subscriptions"
+        - "@fianto/solana-payments/money"
+    validations:
+      required: true
+  - type: input
+    id: function
+    attributes:
+      label: Function
+      placeholder: validateSignedPayment
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Code that shows the problem. Use devnet or generated keys; never paste a private key.
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+      description: What you expected, and what happened instead (including any `reason` returned).
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and peer versions
+      placeholder: "Node 22.18, @solana/kit 8.3.0, @solana-program/token 0.16.1"
+    validations:
+      required: true
