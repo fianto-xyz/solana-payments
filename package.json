@@ -46,6 +46,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@changesets/cli": "3.0.3",
+    "@noble/ed25519": "3.1.0",
     "@size-limit/preset-small-lib": "14.1.0",
     "@solana-program/compute-budget": "0.18.1",
     "@solana-program/token": "0.16.1",

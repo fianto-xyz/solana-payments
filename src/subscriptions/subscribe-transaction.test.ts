@@ -1,3 +1,4 @@
+import { verifyAsync as zip215VerifyAsync } from '@noble/ed25519';
 import {
   AccountRole,
   address,
@@ -514,7 +515,7 @@ describe('validateSignedSubscribe — every way it can differ', () => {
     });
   });
 
-  it('refuses a forged signature for a small-order payer key, which raw WebCrypto accepts', async () => {
+  it('refuses a forged signature for a small-order payer key, which a permissive (ZIP215) verifier accepts', async () => {
     // The identity point (order 1) as the payer's "wallet": R = identity, S = 0 satisfies
     // [S]B == R + [h]A for every message, with no private key anywhere.
     const identity = new Uint8Array(32);
@@ -530,8 +531,9 @@ describe('validateSignedSubscribe — every way it can differ', () => {
     const transaction = getTransactionDecoder().decode(getBase64Encoder().encode(built.base64));
     const forged = new Uint8Array(64);
     forged[0] = 1;
-    const key = await crypto.subtle.importKey('raw', identity, 'Ed25519', false, ['verify']);
-    expect(await crypto.subtle.verify('Ed25519', key, forged, Uint8Array.from(transaction.messageBytes))).toBe(true);
+    expect(
+      await zip215VerifyAsync(forged, Uint8Array.from(transaction.messageBytes), identity, { zip215: true }),
+    ).toBe(true);
 
     await expect(
       validateSignedSubscribe(withSignatureAt(built.base64, forgedPayer, forged), expectation),

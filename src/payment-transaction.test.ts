@@ -1,3 +1,4 @@
+import { verifyAsync as zip215VerifyAsync } from '@noble/ed25519';
 import {
   AuthorityType,
   findAssociatedTokenPda,
@@ -148,7 +149,7 @@ describe('buildPaymentTransaction / validateSignedPayment', () => {
     });
   });
 
-  it('rejects a forged signature for a small-order payer key, which raw WebCrypto accepts (L1)', async () => {
+  it('rejects a forged signature for a small-order payer key, which a permissive (ZIP215) verifier accepts', async () => {
     // The identity point (order 1) as the payer's "wallet": R = identity, S = 0 satisfies
     // [S]B == R + [h]A for every message, with no private key anywhere.
     const identity = new Uint8Array(32);
@@ -159,8 +160,9 @@ describe('buildPaymentTransaction / validateSignedPayment', () => {
     const transaction = getTransactionDecoder().decode(getBase64Encoder().encode(built.base64));
     const forged = new Uint8Array(64);
     forged[0] = 1;
-    const key = await crypto.subtle.importKey('raw', identity, 'Ed25519', false, ['verify']);
-    expect(await crypto.subtle.verify('Ed25519', key, forged, Uint8Array.from(transaction.messageBytes))).toBe(true);
+    expect(
+      await zip215VerifyAsync(forged, Uint8Array.from(transaction.messageBytes), identity, { zip215: true }),
+    ).toBe(true);
 
     const signed = getBase64EncodedWireTransaction({
       ...transaction,

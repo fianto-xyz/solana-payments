@@ -1,4 +1,5 @@
 import { generateKeyPair, getAddressDecoder, getAddressFromPublicKey, signBytes } from '@solana/kit';
+import { verifyAsync as zip215VerifyAsync } from '@noble/ed25519';
 import { verifyWalletSignature } from './wallet-signature.js';
 
 const MESSAGE = new TextEncoder().encode('sign in to example');
@@ -129,8 +130,12 @@ describe('verifyWalletSignature', () => {
     // hash h = SHA512(R||A||M) mod L — a self-consistent condition with no private key involved
     // anywhere. Found by search: for each key below, trying R among the same handful of
     // low-order encodings against a short, fixed sequence of candidate messages found a hit
-    // within 15 tries. Every fixture is checked TWICE: first that raw `crypto.subtle.verify`
-    // ACCEPTS it (proving it is a genuine forgery, not an arbitrary rejection case), then that
+    // within 15 tries. The messages were found so that a cofactorless verifier (checking the
+    // equation above exactly, as some WebCrypto versions do) would also accept them. Every
+    // fixture is checked TWICE: first that a permissive ZIP215 verifier (`@noble/ed25519`'s
+    // `verifyAsync`, which checks the cofactored equation [8][S]B == [8]R + [8][h]A and accepts
+    // non-canonical encodings) ACCEPTS it, proving it is a genuine forgery and not an arbitrary
+    // rejection case whatever the test runtime's own WebCrypto does, then that
     // `verifyWalletSignature` refuses it.
     const CASES: { label: string; publicKey: number[]; r: number[]; message: string }[] = [
       {
@@ -202,9 +207,8 @@ describe('verifyWalletSignature', () => {
       forgedSignature.set(Uint8Array.from(r), 0);
       // S is left as 32 zero bytes.
 
-      // Prove the fixture is a genuine forgery against raw WebCrypto first.
-      const key = await crypto.subtle.importKey('raw', publicKeyBytes, 'Ed25519', false, ['verify']);
-      expect(await crypto.subtle.verify('Ed25519', key, forgedSignature, messageBytes)).toBe(true);
+      // Prove the fixture is a genuine forgery against a permissive (ZIP215) verifier first.
+      expect(await zip215VerifyAsync(forgedSignature, messageBytes, publicKeyBytes, { zip215: true })).toBe(true);
 
       const address = dec.decode(publicKeyBytes);
       expect(await verifyWalletSignature(address, messageBytes, forgedSignature)).toBe(false);
