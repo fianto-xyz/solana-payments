@@ -43,15 +43,15 @@ const result = await validateSignedPayment(signedBase64, expectation);
 if (!result.ok) throw new Error(`refused: ${result.reason}`); // e.g. 'wrong_amount', 'unexpected_program'
 ```
 
-A full, runnable version: [`examples/pay-usdc.ts`](examples/pay-usdc.ts) (`node examples/pay-usdc.ts`, no RPC, no funds needed).
+A full, runnable version: [`examples/pay-usdc.ts`](examples/pay-usdc.ts). From a clone, `pnpm examples` builds the package and runs every example (Node 22.18+; no RPC, no funds needed).
 
 ## Why this library
 
 Each check below is a real attack on "build a transaction, let the wallet sign it":
 
-- **Swapped or extended transaction.** The wallet (or malware in it) returns different bytes: another amount, another destination, an extra instruction. `validateSignedPayment` re-decodes and compares every instruction, account and amount, and refuses trailing bytes the message encoder would not produce.
+- **Swapped or extended transaction.** The wallet (or malware in it) returns different bytes: another amount, another destination, an extra instruction. `validateSignedPayment` re-decodes the message, refuses any program but Token and ComputeBudget, checks every transfer's mint, decimals, source, destination, authority and amount, and refuses trailing bytes the message encoder would not produce.
 - **Fee-payer swap.** A transaction whose fee payer is not the payer makes someone else pay for it. Refused as `wrong_fee_payer`.
-- **Forgeable Ed25519 keys.** WebCrypto's Ed25519 verify accepts signatures from small-order and non-canonical public keys that need no private key at all. `verifyWalletSignature` rejects those keys first.
+- **Forgeable Ed25519 keys.** Some Ed25519 verifiers, including some WebCrypto builds, accept signatures from small-order and non-canonical public keys that need no private key at all. `verifyWalletSignature` rejects those keys itself, whatever the runtime does.
 - **Decoy writable accounts.** For transactions a second party co-signs (subscriptions), an extra writable account or a promoted signer role can cost the co-signer money. `validateSignedSubscribe` checks the exact account list and signer roles.
 - **Ambiguous RPC failures.** "The provider did not answer" and "the transaction failed" look alike in kit. `isTransportFailure` and `describeRpcFailure` tell them apart in every `NODE_ENV`.
 
@@ -121,7 +121,7 @@ try {
 
 ## Compatibility
 
-Node 22+, modern browsers and edge runtimes (WebCrypto only, no Node-only APIs). ESM and CommonJS.
+Node 22+, modern browsers and edge runtimes (WebCrypto only, no Node-only APIs; `verifyWalletSignature` needs a WebCrypto with Ed25519). ESM and CommonJS.
 Peer dependencies: `@solana/kit` ^8.3, `@solana-program/token` ^0.16, `@solana-program/compute-budget` ^0.18,
 and `@solana/subscriptions` ^0.5 for the `/subscriptions` entry only.
 

@@ -43,7 +43,7 @@ export interface CreatePlanInput {
   owner: TransactionSigner;
   planId: bigint;
   mint: string;
-  /** The per-period cap: price + fee. The program enforces it; the caller chooses the split. */
+  /** The per-period cap. The program enforces it; the caller chooses how a charge splits it. */
   capAmount: bigint;
   periodHours: number;
   /** WALLETS, not token accounts: the program checks the receiver ATA's owner. */
@@ -128,7 +128,7 @@ export interface UpdatePlanPullersInput {
 }
 
 /**
- * Rotates the puller list on an ACTIVE plan. VERIFIED against the program source
+ * Replaces the puller list on an ACTIVE plan. VERIFIED against the program source
  * (`update_plan.rs:150-187`): the Active branch writes `pullers` outright, gated on the
  * `expected_*` fields matching the live plan. A SUNSET plan may only have pullers REMOVED,
  * which is a different operation with different safety rules, so this builder refuses one
@@ -183,9 +183,9 @@ export interface SunsetPlanInput {
  * sets status, end_ts and pullers in one compare-and-set; Sunset requires a non-zero end_ts at
  * least one period out (`state/common.rs` `validate_plan_end_ts`); `subscribe` refuses a Sunset
  * plan; and `state/plan.rs` `can_pull` admits only the owner or a listed puller. With every
- * puller removed, no puller can pull from this plan again, and the owner key never pulls.
- * After end_ts nobody can. A Sunset plan is immutable but for removing pullers, so this refuses
- * one.
+ * puller removed, only the plan owner's key can still pull, and only until end_ts (`can_pull`
+ * admits it); after end_ts nobody can. A caller that never pulls with the owner key stops all
+ * charges here. A Sunset plan is immutable but for removing pullers, so this refuses one.
  */
 export async function buildSunsetPlanTransaction(
   input: SunsetPlanInput,

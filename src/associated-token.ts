@@ -24,8 +24,8 @@ export async function deriveAssociatedTokenAddress(
  * How many extra bump seeds the search for `owner`'s associated token account tries before it
  * finds one off the curve (255 - bump): 0 for most wallets, k for one in 2^k. The Subscriptions
  * program re-derives the PAYER's token account in every pull, and each extra try costs it
- * about 1,500 compute units (measured), so a renewal's compute
- * budget is sized per payer from this.
+ * about 1,500 compute units (measured), so a caller can size a pull's compute budget per payer
+ * from this.
  */
 export async function associatedTokenSearchSteps(owner: string, mint: string): Promise<number> {
   const [, bump] = await findAssociatedTokenPda({

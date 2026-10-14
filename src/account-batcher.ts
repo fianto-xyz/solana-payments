@@ -10,10 +10,14 @@ interface Waiter {
  * Single-account reads that arrive within `windowMs` of each other go out as ONE `getAccounts`
  * call (up to MAX_ACCOUNTS_PER_CALL addresses; the same address once): fifty simultaneous
  * reads cost one RPC call, not fifty. A failed call fails every read in it. One batcher per runtime.
+ *
+ * The reader must report failure by rejecting, never by throwing synchronously: a synchronous
+ * throw leaves the batch's reads unsettled. A reader that returns fewer accounts than addresses
+ * resolves each missing read as null (absent), not as an error.
  */
 export class AccountBatcher {
   private pending = new Map<string, Waiter[]>();
-  private timer: NodeJS.Timeout | null = null;
+  private timer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private readonly reader: AccountsReader,

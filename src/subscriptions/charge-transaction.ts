@@ -51,9 +51,8 @@ export interface ChargeTransactionInput {
 }
 
 /**
- * A refusal to build: always a CALLER (or signer) bug, never the network, so a caller can
- * treat it as a bug in the caller or signer, not as a transient network failure.
- * Its messages are fixed, developer-authored strings, safe to log.
+ * A refusal to build: always a bug in the caller or its signer, never a network failure, so
+ * retrying cannot help. Its messages are fixed, developer-authored strings, safe to log.
  */
 export class ChargeBuildRefused extends Error {
   override readonly name = 'ChargeBuildRefused';
@@ -68,8 +67,8 @@ export interface BuiltCharge {
 
 /**
  * A charge's message, compiled and NOT signed: every signature slot is empty, which the wire
- * encoding writes as 64 zero bytes. This is what a caller can SIMULATE — bytes nobody can
- * broadcast — so a signed charge never leaves the process before the caller has recorded it.
+ * encoding writes as 64 zero bytes. A caller can SIMULATE these bytes — nobody can broadcast
+ * them — before anything is signed.
  */
 export interface CompiledCharge {
   /** The unsigned wire transaction, base64. */
@@ -91,8 +90,8 @@ export interface CompiledCharge {
  * payment.
  *
  * Every refusal here is a CALLER bug, never a payer input, and each one exists because the
- * alternative is a transaction that disagrees with what the caller recorded for it — which can
- * only be discovered at finality, after the money has moved.
+ * alternative is a transaction that disagrees with what the caller asked for — which can only
+ * be discovered at finality, after the money has moved.
  *
  * `compileChargeTransaction` + `signChargeTransaction`, in one call.
  */
@@ -187,9 +186,9 @@ export async function signChargeTransaction(
   }
   const base64 = await puller.sign(compiled.base64);
   const signed = getTransactionDecoder().decode(getBase64Encoder().encode(base64));
-  // The caller records THESE bytes and THIS signature. A signer that handed back a different
-  // message — re-serialised, or worse — would put a transaction on chain that nothing the
-  // caller recorded describes, so compare the message bytes exactly.
+  // A signer that handed back a different message — re-serialised, or worse — would put a
+  // transaction on chain other than the one compiled (and perhaps simulated), so compare the
+  // message bytes exactly.
   if (!sameBytes(signed.messageBytes, compiled.messageBytes)) {
     throw new ChargeBuildRefused('buildChargeTransaction: the signer changed the message');
   }

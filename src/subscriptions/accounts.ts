@@ -22,7 +22,7 @@ export interface OnchainPlanAccount {
   status: 'ACTIVE' | 'SUNSET';
   planId: bigint;
   mint: string;
-  /** The per-period cap: price + fee. */
+  /** The per-period cap: the most the plan may pull in one period. */
   amount: bigint;
   periodHours: number;
   /** The on-chain creation timestamp, which `subscribe` binds the payer's signature to. */

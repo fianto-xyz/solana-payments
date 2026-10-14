@@ -29,7 +29,7 @@ export const MAX_ACCOUNTS_PER_CALL = 100;
 export const MAX_SIGNATURES_PER_STATUS_CALL = 256;
 
 // Two transferChecked instructions on existing accounts cost well under 20k CU; 60k leaves
-// room for a wallet that adds nothing and still lands.
+// headroom for whatever a wallet adds.
 export const COMPUTE_UNIT_LIMIT = 60_000;
 /** The base network fee per signature (`transactionFeeLamports`). */
 export const LAMPORTS_PER_SIGNATURE = 5_000n;

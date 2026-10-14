@@ -37,11 +37,9 @@ export interface CoSignExpectation {
  * expected payer wallet and the signature it validated) against what the returned bytes
  * actually decode to — a caller-side wiring mistake is caught exactly like a signing bug.
  *
- * Not checked: that every OTHER required signature slot (if any) is present and
- * cryptographically valid — e.g. a transaction that still needed a third signature nobody
- * provided. A message that declares a signer slot nothing ever fills is a message-BUILDING
- * bug, not a signing-oracle risk, and is better caught where the message is built than added
- * here speculatively.
+ * Not checked: that every OTHER required signature slot (if any) is present and valid. A
+ * caller whose message declares more signers than the payer and the co-signer must check
+ * that where it builds the message.
  */
 export function verifyCoSignedTransaction(
   broadcastBase64: string,

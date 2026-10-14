@@ -4,8 +4,8 @@ import type { AccountData, TokenAccountInfo } from './rpc.js';
 
 /**
  * A token account's fields from its raw account, or null when it is not one: missing, or owned
- * by any other program (Token-2022 included: not a classic token account). `getTokenAccount` and a batched
- * `getAccounts` read decode alike through this.
+ * by any other program (Token-2022 included: not a classic token account). A single-account read
+ * and a batched `getAccounts` read decode alike through this.
  */
 export function tokenAccountFrom(account: AccountData | null, tokenProgram: string): TokenAccountInfo | null {
   if (!account || account.owner !== tokenProgram || !account.dataBase64) return null;

@@ -109,8 +109,8 @@ function transferInstruction(
     decimals: input.decimals,
   });
   if (!reference) return instruction;
-  // Appended as an extra, read-only, non-signer account. The Token program ignores it; the
-  // it lets anyone find this payment by address later (getSignaturesForAddress).
+  // Appended as an extra, read-only, non-signer account. The Token program ignores it; it
+  // lets anyone find this payment by address later (getSignaturesForAddress).
   return {
     ...instruction,
     accounts: [
@@ -178,12 +178,11 @@ interface ReadTransfer {
 
 /**
  * Positional decode of a transferChecked instruction; null if it is not one. The payer fully
- * controls `instruction.data` and `.accounts`: a Token-program instruction whose data
- * is the single discriminator byte with no amount/decimals, or any other wrong length, used
- * to reach the u64 codec and throw — turning `submit` into a 500 before any signature check.
- * The exact-length check below rejects that input as "not a transfer the validator understands" before
- * decoding is even attempted; the try/catch is defence in depth for any other decode failure
- * this length check does not anticipate, so this function can never throw.
+ * controls `instruction.data` and `.accounts`: a Token-program instruction whose data is the
+ * single discriminator byte with no amount/decimals, or any other wrong length, would make the
+ * u64 codec throw. The exact-length check below rejects that input as "not a transfer the
+ * validator understands" before decoding is attempted; the try/catch is defence in depth for
+ * any other decode failure, so this function can never throw.
  *
  * Deliberately NOT validated: each account's `role` (writable/signer flags). The only account
  * whose signer-ness matters here is `authority` (accounts[3]), and its role
@@ -193,8 +192,8 @@ interface ReadTransfer {
  * `destination` or `mint` account is mis-flagged (e.g. marked read-only when it should be
  * writable) is not something this gate needs to catch: the Token program itself enforces its
  * own account requirements and simply fails the instruction on-chain if they are wrong, and
- * "was this payment actually made" is decided ONLY by the finalized token-balance delta the
- * finalized token-balance delta read back from the chain, never by anything
+ * "was this payment actually made" must be decided by the caller ONLY from the token-balance
+ * change it reads back from the chain at finality, never by anything
  * this structural gate accepts. A wrong role flag can make a transaction fail to land; it can
  * never make it move money somewhere this gate did not already check the address of.
  */
@@ -232,11 +231,10 @@ type ReadonlyUint8ArrayLike = { readonly [index: number]: number; readonly lengt
  * destination and amount, the reference, and the blockhash that was issued. Any disagreement is
  * a refusal to broadcast, which is the same thing as the payer not being charged.
  *
- * The bytes in `base64` are entirely payer-controlled and `expectation` is read back out of
- * the caller's own storage; neither is trusted to be well-formed. Everything past the size check runs
- * inside one try/catch so that ANY decode or interpretation failure — not just the
- * outer transaction envelope — comes back as a refusal, never an uncaught exception out of
- * the caller's submit handler.
+ * The bytes in `base64` are entirely payer-controlled and `expectation` is supplied by the
+ * caller; neither is trusted to be well-formed. Everything past the size check runs inside one
+ * try/catch, so ANY decode or interpretation failure comes back as a refusal, never as an
+ * exception.
  */
 export async function validateSignedPayment(
   base64: string,
@@ -262,9 +260,8 @@ async function checkSignedPayment(
   // The compiled message is a LOSSY view (it is what `staticAccounts` + `header` +
   // `instructions` express); bytes the payer signed but that no compiled field accounts for —
   // e.g. trailing bytes after the message the kit decoder still folds into `messageBytes` —
-  // would otherwise verify against a signature over MORE than what every check below inspects
-  // Re-encoding and
-  // comparing byte-for-byte closes that gap here too.
+  // would otherwise verify against a signature over MORE than what every check below inspects.
+  // Re-encoding and comparing byte-for-byte closes that gap.
   if (
     !bytesEqual(
       getCompiledTransactionMessageEncoder().encode(compiled) as unknown as Uint8Array,
@@ -285,7 +282,7 @@ async function checkSignedPayment(
   for (const instruction of message.instructions) {
     const program = instruction.programAddress;
     // ComputeBudget's own instruction contents (units, priority-fee micro-lamports) are
-    // deliberately never inspected here, deliberately not just for the two instructions the builder adds but
+    // deliberately never inspected here — not just for the two instructions the builder adds but
     // for ANY ComputeBudget instruction the payer's wallet adds, including a duplicate or a
     // different unit/price. The payer is always the fee payer (checked above), so a priority
     // fee is lamports the payer alone spends on their own transaction landing faster — it can

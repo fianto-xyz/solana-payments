@@ -27,10 +27,10 @@ import { SolanaRpcBusyError } from './rpc.js';
  *
  * EVERY OTHER code means "this provider cannot answer right now", never "the chain says no":
  * -32603 internal error, -32005 node unhealthy, -32011 no transaction history, -32004/-32014/
- * -32016 lagging, -32601 a method its plan does not offer, and every code outside Solana's list
+ * -32016 lagging, -32601 a method the endpoint does not offer, and every code outside Solana's list
  * — -32000 Unauthorized, -32029 Too Many Requests, 429/403 in the body. An
- * allow-list of answers, not a deny-list of outages, so an unknown provider code can only ever
- * cost a fallback hop or an undecided attempt, never a verdict.
+ * allow-list of answers, not a deny-list of outages, so an unknown code can only ever cost a
+ * retry, never a wrong verdict.
  */
 const ANSWER_CODES: ReadonlySet<number> = new Set([
   SOLANA_ERROR__JSON_RPC__SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
@@ -105,8 +105,8 @@ const NETWORK_ERROR_CODE = /^(UND_ERR_|E[A-Z]+$)/;
 /**
  * A `TypeError` that fetch itself threw: undici's `TypeError('fetch failed')` (its
  * `cause` names the network error) or `TypeError('terminated')` for a body cut off mid-read.
- * Any other TypeError is a bug — the caller's, or a library's — and must surface as one, not as an
- * outage that quietly moves to the fallback or is misread as an outage.
+ * Any other TypeError is a bug — the caller's, or a library's — and must surface as one, never
+ * be classified as "the provider did not answer".
  */
 function isFetchTypeError(error: TypeError): boolean {
   if (error.message === 'fetch failed' || error.message === 'terminated') return true;
@@ -115,11 +115,11 @@ function isFetchTypeError(error: TypeError): boolean {
 }
 
 /**
- * Whether the SAME question is worth asking a second provider: this provider never gave an
- * answer. True for a failed connection, a client-side timeout, an HTTP error status, and an
+ * Whether the SAME request is worth sending again — later, or to another endpoint: this
+ * endpoint never gave an answer. True for a failed connection, a client-side timeout, an HTTP error status, and an
  * in-band JSON-RPC error that is not an answer (`withProviderRefusals`; kit's own `SolanaError`
  * for such a code too, for a client built without the wrapper). False for a JSON-RPC error that
- * IS an answer (`ANSWER_CODES`) — a second provider would say the same — and for anything else,
+ * IS an answer (`ANSWER_CODES`) — any other endpoint would say the same — and for anything else,
  * which is a bug to surface.
  */
 export function isTransportFailure(error: unknown): boolean {
@@ -137,12 +137,9 @@ export function isTransportFailure(error: unknown): boolean {
 }
 
 /**
- * No configured Solana RPC provider answered a "is this signature unknown everywhere?" question
- * at all. This is deliberately distinct from a `false` answer: `false` means "cannot currently
- * conclude unknown everywhere" (either because a provider knows it, or because at least one
- * provider that might know it did not answer) and is safe to treat as "try again later". This
- * error means NOTHING answered, so the caller has no information to act on this attempt — it
- * should retry, never conclude from it that the transaction landed or was dropped.
+ * Raise this when none of the RPC endpoints a caller asked answered at all. It is distinct
+ * from every answer, including a negative one: the caller has no information to act on, so
+ * it should retry, and never conclude from it that a transaction landed or was dropped.
  */
 export class SolanaProviderUnavailableError extends Error {
   constructor(message = 'No configured Solana RPC provider answered.') {

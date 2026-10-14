@@ -21,10 +21,9 @@ const ED25519_FIELD_PRIME = (1n << 255n) - 19n;
  * of each of these 7 points are rejected; `isSmallOrderKey` below does the same masking.
  *
  * Why this matters: a public key of order dividing 8 lets an attacker forge a signature with NO
- * private key. Node's WebCrypto Ed25519 verify (OpenSSL) is cofactorless and does not reject
- * these on its own — reproduced directly against `crypto.subtle` on Node 24.10 for several of
- * these exact encodings, including R = the identity point with S = 0, which verifies for EVERY
- * message once the identity point is accepted as a public key (see wallet-signature.test.ts).
+ * private key. Whether a runtime's Ed25519 verify rejects these keys itself varies by
+ * implementation and version (some WebCrypto builds accept them; see wallet-signature.test.ts
+ * for forgeries a permissive verifier accepts), so this module rejects them itself.
  */
 const SMALL_ORDER_Y_BLACKLIST: readonly Uint8Array[] = [
   // 0 (order 4)
@@ -88,8 +87,8 @@ function isSmallOrderKey(encoded: Uint8Array): boolean {
 }
 
 /**
- * True when `encoded` is a public key a cofactorless verifier (Node's WebCrypto Ed25519 among
- * them) will accept a forged signature for, with no private key at all: a non-canonical y
+ * True when `encoded` is a public key a permissive verifier (some WebCrypto builds among
+ * them) may accept a forged signature for, with no private key at all: a non-canonical y
  * (y >= p) or one of the 7 points of order dividing 8.
  */
 function isForgeableEd25519PublicKey(encoded: Uint8Array): boolean {
@@ -114,9 +113,9 @@ function isForgeableEd25519PublicKey(encoded: Uint8Array): boolean {
  * caller branches on.
  *
  * Rejects a forgeable public key (see `isForgeableEd25519PublicKey`) before ever calling
- * `importKey`: Node's WebCrypto Ed25519 verify is cofactorless and does not itself reject
- * small-order or non-canonical keys, so without this check a signature could be forged for one
- * with no private key — this function decides who signed.
+ * `importKey`: not every runtime's WebCrypto Ed25519 refuses small-order or non-canonical keys
+ * itself, so without this check a signature could be forged for one with no private key —
+ * and this function decides who signed.
  *
  * `Uint8Array.from` copies `signature` into a plain ArrayBuffer-backed array, which is what
  * WebCrypto's `BufferSource` requires under TypeScript 6's typed-array generics.

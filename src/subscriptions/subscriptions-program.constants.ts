@@ -28,7 +28,7 @@ export const AUTHORITY_ACCOUNT_BYTES = 106;
 
 
 /**
- * A plan's on-chain per-period cap must equal price + fee; its arrays hold at most four.
+ * A plan's destination and puller arrays hold at most four entries each.
  * Re-exported from the SDK's own `MAX_PLAN_DESTINATIONS`/`MAX_PLAN_PULLERS` — kept as TWO
  * separate re-exports, not one shared constant, because the program declares them separately
  * and a future version could diverge them; today both happen to be 4.

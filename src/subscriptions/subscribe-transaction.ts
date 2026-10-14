@@ -50,8 +50,8 @@ import { SUBSCRIPTIONS_PROGRAM_ID } from './subscriptions-program.constants.js';
 
 /**
  * What the payer is being asked to sign, and therefore exactly what must come back. Every
- * field is compared; nothing is re-derived at validation time. Store it when the transaction
- * is BUILT and read it back when the signed transaction is SUBMITTED.
+ * field is compared; nothing is re-derived at validation time. Keep it from when the
+ * transaction is built until the signed transaction comes back.
  */
 export interface SubscribeExpectation {
   payerWallet: string;
@@ -68,8 +68,8 @@ export interface SubscribeExpectation {
   authorityExists: boolean;
   mint: string;
   decimals: number;
-  /** The plan's per-period cap: the LIST price + fee + network fee, which the payer approves. The first charge takes
-   *  at most this — less when the first charge is discounted. */
+  /** The plan's per-period cap, which the payer approves. The first charge (amount + fee +
+   *  network fee) must be positive and at most this. */
   capAmount: bigint;
   periodHours: number;
   /** The plan account's on-chain `terms.created_at`. */
@@ -158,8 +158,8 @@ const SYSTEM_PROGRAM_ADDRESS = '11111111111111111111111111111111';
  * USDC has none — so the reference is ignored by the program while still appearing in the
  * transaction's `accountKeys`, which is what lets the payment be found by its reference.
  *
- * Fee payer is the PAYER. The puller is a required signer of both pulls, but its signature is
- * added only after validation, immediately before broadcast.
+ * Fee payer is the PAYER. The puller is a required signer of both pulls: the caller adds its
+ * signature only after `validateSignedSubscribe` accepts the payer-signed bytes.
  */
 export async function buildSubscribeTransaction(
   input: SubscribeTransactionInput,
@@ -313,9 +313,9 @@ function writableNonSigners(
   return statics.slice(header.numSignerAccounts, statics.length - header.numReadonlyNonSignerAccounts);
 }
 
-/** The writable non-signers of the transaction THIS MODULE builds for `expectation` — the roles the SDK's
- *  instruction builders assign. ComputeBudget adds only a read-only program, so the compute
- *  numbers here do not matter. */
+/** The writable non-signers of the transaction THIS MODULE builds for `expectation` — the
+ *  roles the SDK's instruction builders assign. ComputeBudget adds only a read-only program,
+ *  so the compute numbers here do not matter. */
 async function expectedWritableNonSigners(expectation: SubscribeExpectation): Promise<Set<string>> {
   const built = await buildSubscribeTransaction({
     ...expectation,
@@ -772,9 +772,8 @@ async function checkSignedSubscribe(
   // writable signers — but those slots are already refused above by their exact account
   // counts (`checkInit`/`checkSubscribe`), so what is left for THIS check to catch is a role
   // change on an EXISTING position: the puller demoted to a non-signer (which later makes the
-  // co-signing step throw, on demand of any payer), promoted to writable (costs nothing today
-  // only because no account it signs ever reaches a System Program CPI, but a flag that is not
-  // needed is a flag not granted), or a third, unfilled signer slot.
+  // co-signing step throw, on demand of any payer), promoted to writable (a flag it does not
+  // need), or a third, unfilled signer slot.
   if (
     compiled.header.numSignerAccounts !== 2 ||
     compiled.header.numReadonlySignerAccounts !== 1 ||
@@ -818,7 +817,7 @@ async function checkSignedSubscribe(
 
 /** The first charge pays the recipient something, and all of it (price + fee + network fee) fits
  *  under the cap the payer approves: equal for a full-price subscribe, below it for a discounted
- *  one (the on-chain probe: a pull under the cap lands, one over it fails). */
+ *  one (the program lets a pull under the cap land and refuses one over it). */
 function firstChargeWithinCap(expectation: {
   amount: bigint;
   feeAmount: bigint;

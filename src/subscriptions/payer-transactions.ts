@@ -44,8 +44,8 @@ const SYSTEM_PROGRAM_ADDRESS = '11111111111111111111111111111111';
 
 /**
  * What the payer is asked to sign for a cancel, revoke or reauthorize, and therefore exactly what
- * must come back. Every field is compared; nothing is re-derived at validation time. Store it
- * when the transaction is BUILT and read it back when the signed transaction is SUBMITTED.
+ * must come back. Every field is compared; nothing is re-derived at validation time. Keep it
+ * from when the transaction is built until the signed transaction comes back.
  *
  * No key other than the payer's signs any of these (program source: the only signer
  * `CancelSubscription`, `RevokeDelegation` and `InitSubscriptionAuthority` require is the
@@ -137,7 +137,7 @@ async function shapeOf(expectation: PayerActionExpectation): Promise<ActionShape
         instruction: SubscriptionsInstruction.RevokeDelegation,
         dataLength: getRevokeDelegationInstructionDataDecoder().fixedSize,
         // authority, delegationAccount, then the subscription branch's trailing planPda. No
-        // `receiver`: build this only for a subscription whose recorded rent payer IS the
+        // `receiver`: build this only for a subscription whose on-chain `rentPayer` IS the
         // payer, and the program then pays the rent back to the signer.
         accounts: [expectation.payerWallet, expectation.subscriptionAddress, expectation.planAddress],
         writable: new Set([expectation.subscriptionAddress]),
@@ -233,7 +233,7 @@ export async function buildPayerActionTransaction(
  *   - the payer's ed25519 signature over the message.
  *
  * No other key signs these, so a wrong shape here could only ever cost the payer — but the
- * caller BROADCASTS it, records it and acts on the subscription change it makes, so "exactly
+ * caller BROADCASTS it and acts on the subscription change it makes, so "exactly
  * what was asked for" is the only thing it should send. Every decode or interpretation failure
  * is a refusal.
  */
@@ -257,7 +257,8 @@ function refuse(reason: PayerActionValidationFailure): PayerActionValidation {
  * The header's three counts must be internally consistent BEFORE anything downstream indexes
  * into `staticAccounts` with them: a header claiming more read-only non-signers than there
  * are non-signer slots left drives the writable-set slice's end index negative, which silently
- * narrows the slice instead of failing — accepting bytes that differ from what was built. The runtime's own sanitizer would refuse such a transaction, but this validator's
+ * narrows the slice instead of failing — accepting bytes that differ from what was built.
+ * The runtime's own sanitizer would refuse such a transaction, but this validator's
  * whole job is to say so FIRST, never to depend on that.
  */
 function headerBoundsAreSane(

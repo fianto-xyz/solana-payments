@@ -1,4 +1,4 @@
-// Build a USDC payment, sign it as the payer would, then validate it — and catch a tampered copy.
+// Build a USDC payment, sign it as the payer would, then validate it — and refuse it against a mismatched expectation.
 import { generateKeyPairSigner, partiallySignTransaction, getTransactionDecoder, getBase64Encoder, getBase64EncodedWireTransaction } from '@solana/kit';
 import {
   buildPaymentTransaction, validateSignedPayment, deriveAssociatedTokenAddress,
@@ -36,4 +36,4 @@ const signed = getBase64EncodedWireTransaction(await partiallySignTransaction([p
 
 const { computeUnitLimit: _limit, computeUnitPriceMicroLamports: _price, lastValidBlockHeight: _height, ...expectation } = input; // build-only settings are not part of the expectation
 console.log('valid:', await validateSignedPayment(signed, expectation));
-console.log('tampered:', await validateSignedPayment(signed, { ...expectation, amount: expectation.amount + 1n }));
+console.log('mismatched expectation:', await validateSignedPayment(signed, { ...expectation, amount: expectation.amount + 1n }));
