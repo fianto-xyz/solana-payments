@@ -9,7 +9,7 @@ interface Waiter {
 /**
  * Single-account reads that arrive within `windowMs` of each other go out as ONE `getAccounts`
  * call (up to MAX_ACCOUNTS_PER_CALL addresses; the same address once): fifty simultaneous
- * reads cost one RPC call, not fifty. A failed call fails every read in it. Per process.
+ * reads cost one RPC call, not fifty. A failed call fails every read in it. One batcher per runtime.
  */
 export class AccountBatcher {
   private pending = new Map<string, Waiter[]>();

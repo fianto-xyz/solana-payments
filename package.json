@@ -23,6 +23,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.cts",
+  "typesVersions": { "*": { "subscriptions": ["./dist/subscriptions.d.cts"], "money": ["./dist/money.d.cts"] } },
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json --noEmit",

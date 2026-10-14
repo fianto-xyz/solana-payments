@@ -1,0 +1,5 @@
+[
+  { "name": "root (payments)", "path": "dist/index.js", "import": "*", "ignore": ["@solana/kit", "@solana-program/token", "@solana-program/compute-budget"], "limit": "5.5 kB" },
+  { "name": "/subscriptions", "path": "dist/subscriptions.js", "import": "*", "ignore": ["@solana/kit", "@solana-program/token", "@solana-program/compute-budget", "@solana/subscriptions"], "limit": "6.6 kB" },
+  { "name": "/money", "path": "dist/money.js", "import": "*", "limit": "1.1 kB" }
+]
