@@ -1,0 +1,112 @@
+{
+ "_comment": "JSON-RPC error bodies as RPC providers return them inside HTTP 200. Shapes are real; provider-specific wording is removed.",
+ "unauthorized_-32000": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32000,
+    "message": "Unauthorized: You must authenticate your request with an API key."
+   },
+   "id": null
+  }
+ },
+ "unsupported_version_-32015": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32015,
+    "message": "Transaction version (1) is not supported by the requesting client. Please try the request again with the following configuration parameter: \"maxSupportedTransactionVersion\": 1"
+   },
+   "id": 1
+  }
+ },
+ "internal_-32603": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32603,
+    "message": "Internal error"
+   },
+   "id": 1
+  }
+ },
+ "node_behind_-32005": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32005,
+    "message": "Node is behind by 42 slots",
+    "data": {
+     "numSlotsBehind": 42
+    }
+   },
+   "id": 1
+  }
+ },
+ "rate_limited_429_in_body": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": 429,
+    "message": "Too many requests for a specific RPC call"
+   },
+   "id": 1
+  }
+ },
+ "rate_limited_-32029_in_body": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32029,
+    "message": "Too Many Requests"
+   },
+   "id": 1
+  }
+ },
+ "history_unavailable_-32011": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32011,
+    "message": "Transaction history is not available from this node"
+   },
+   "id": 1
+  }
+ },
+ "blockhash_not_found_-32002": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32002,
+    "message": "Transaction simulation failed: Blockhash not found",
+    "data": {
+     "accounts": null,
+     "err": "BlockhashNotFound",
+     "fee": null,
+     "innerInstructions": null,
+     "loadedAccountsDataSize": 0,
+     "loadedAddresses": null,
+     "logs": [],
+     "postBalances": null,
+     "postTokenBalances": null,
+     "preBalances": null,
+     "preTokenBalances": null,
+     "replacementBlockhash": null,
+     "returnData": null,
+     "unitsConsumed": 0
+    }
+   },
+   "id": 1
+  }
+ },
+ "invalid_params_-32602": {
+  "body": {
+   "jsonrpc": "2.0",
+   "error": {
+    "code": -32602,
+    "message": "invalid transaction: Transaction failed to sanitize accounts offsets correctly"
+   },
+   "id": 1
+  }
+ }
+}
