@@ -28,7 +28,7 @@
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "lint": "oxlint --type-aware src/",
+    "lint": "oxlint --type-aware src/ examples/ scripts/",
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:package": "pnpm build && publint && attw --pack . --profile strict && size-limit",
     "check:consumer": "pnpm build && node scripts/check-consumer.mjs",
