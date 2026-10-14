@@ -1,0 +1,62 @@
+{
+  "name": "@fianto/solana-payments",
+  "version": "0.0.0",
+  "description": "Build and verify Solana USDC payments and subscriptions: typed, tested, built on @solana/kit.",
+  "license": "MIT",
+  "author": "fianto",
+  "type": "module",
+  "sideEffects": false,
+  "packageManager": "pnpm@10.28.2",
+  "engines": { "node": ">=22" },
+  "files": ["dist"],
+  "repository": { "type": "git", "url": "git+https://github.com/fianto-xyz/solana-payments.git" },
+  "homepage": "https://github.com/fianto-xyz/solana-payments#readme",
+  "bugs": { "url": "https://github.com/fianto-xyz/solana-payments/issues" },
+  "publishConfig": { "access": "public", "provenance": true },
+  "keywords": ["solana", "solana-pay", "usdc", "spl-token", "payments", "crypto-payments", "subscriptions", "recurring-payments", "siws", "sign-in-with-solana", "web3", "solana-kit", "typescript"],
+  "exports": {
+    ".": { "import": "./dist/index.js", "require": "./dist/index.cjs" },
+    "./subscriptions": { "import": "./dist/subscriptions.js", "require": "./dist/subscriptions.cjs" },
+    "./money": { "import": "./dist/money.js", "require": "./dist/money.cjs" },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "oxlint --type-aware src/",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "check:package": "pnpm build && publint && attw --pack . --profile strict && size-limit",
+    "check:consumer": "pnpm build && node scripts/check-consumer.mjs",
+    "check:readme": "pnpm build && node scripts/check-readme-snippets.mjs",
+    "examples": "pnpm build && node examples/pay-usdc.ts && node examples/sign-in-with-solana.ts && node examples/subscription-accounts.ts",
+    "prepack": "test -d dist || (echo 'dist/ is missing: run pnpm build first' >&2; exit 1)"
+  },
+  "peerDependencies": {
+    "@solana-program/compute-budget": "^0.18.1",
+    "@solana-program/token": "^0.16.1",
+    "@solana/kit": "^8.3.0",
+    "@solana/subscriptions": "^0.5.0"
+  },
+  "peerDependenciesMeta": { "@solana/subscriptions": { "optional": true } },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@changesets/cli": "3.0.3",
+    "@size-limit/preset-small-lib": "14.1.0",
+    "@solana-program/compute-budget": "0.18.1",
+    "@solana-program/token": "0.16.1",
+    "@solana/kit": "8.3.0",
+    "@solana/subscriptions": "0.5.0",
+    "@types/node": "^24",
+    "oxlint": "1.83.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "publint": "0.3.24",
+    "size-limit": "14.1.0",
+    "tsdown": "0.23.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  }
+}
