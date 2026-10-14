@@ -1,7 +1,7 @@
 {
   "name": "@fianto/solana-payments",
   "version": "0.1.0",
-  "description": "Build and verify Solana USDC payments and subscriptions: typed, tested, built on @solana/kit.",
+  "description": "TypeScript library to build and verify USDC payments and subscriptions on Solana, with SIWS. Built on @solana/kit.",
   "license": "MIT",
   "author": "fianto",
   "type": "module",
@@ -13,7 +13,7 @@
   "homepage": "https://github.com/fianto-xyz/solana-payments#readme",
   "bugs": { "url": "https://github.com/fianto-xyz/solana-payments/issues" },
   "publishConfig": { "access": "public", "provenance": true },
-  "keywords": ["solana", "solana-pay", "usdc", "spl-token", "payments", "crypto-payments", "subscriptions", "recurring-payments", "siws", "sign-in-with-solana", "web3", "solana-kit", "typescript"],
+  "keywords": ["solana", "usdc", "spl-token", "@solana/kit", "solana payments", "usdc payments", "solana subscriptions", "recurring payments", "transaction validation", "signature verification", "sign in with solana", "siws", "ed25519", "solana web3", "stablecoin", "crypto payments", "solana-pay", "typescript", "payments", "subscriptions"],
   "exports": {
     ".": { "import": "./dist/index.js", "require": "./dist/index.cjs" },
     "./subscriptions": { "import": "./dist/subscriptions.js", "require": "./dist/subscriptions.cjs" },
