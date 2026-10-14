@@ -1,6 +1,6 @@
 {
   "name": "@fianto/solana-payments",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Build and verify Solana USDC payments and subscriptions: typed, tested, built on @solana/kit.",
   "license": "MIT",
   "author": "fianto",
