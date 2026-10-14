@@ -5,7 +5,7 @@
    "jsonrpc": "2.0",
    "error": {
     "code": -32000,
-    "message": "Unauthorized: You must authenticate your request with an API key."
+    "message": "Unauthorized"
    },
    "id": null
   }

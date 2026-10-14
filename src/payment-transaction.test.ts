@@ -107,7 +107,7 @@ describe('buildPaymentTransaction / validateSignedPayment', () => {
     expect(result).toEqual({ ok: true, signature: expect.any(String) });
   });
 
-  it('omits the feeRecipient transfer entirely at a zero fee', async () => {
+  it('omits the fee recipient transfer entirely at a zero fee', async () => {
     const free = { ...input, feeAmount: 0n, feeRecipientTokenAccount: null };
     const built = await buildPaymentTransaction(free);
     const signed = await signWith(built.base64, payer.keyPair);

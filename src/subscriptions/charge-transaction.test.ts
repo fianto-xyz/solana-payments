@@ -191,9 +191,9 @@ describe('buildChargeTransaction', () => {
   });
 
   it('REFUSES a signer that hands back a different message than the one it was given', async () => {
-    // What the caller records (the signature, the rebroadcast bytes) must be exactly what was
-    // built: a signer — a KMS, say — that re-serialised or altered the message would otherwise
-    // put a transaction on chain that nothing recorded describes.
+    // The signature and bytes the caller gets back must be exactly what was built: a signer —
+    // a KMS, say — that re-serialised or altered the message would otherwise put a different
+    // transaction on chain.
     const other = await buildChargeTransaction({ ...input, amount: 1n });
     const tampering: TransactionSigner = {
       address: puller.address,

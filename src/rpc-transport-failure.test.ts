@@ -19,8 +19,8 @@ describe('isTransportFailure', () => {
     expect(isTransportFailure(new TypeError('terminated', { cause: socket }))).toBe(true);
   });
 
-  // Every TypeError used to count as "the provider did not answer", so a bug in the caller's
-  // own code (or a library's) moved to the fallback, or was misread as an outage, instead of surfacing.
+  // A TypeError that fetch did not throw is a bug — the caller's own or a library's — and must
+  // surface, never be classified as "the provider did not answer".
   it('is false for a TypeError that is a bug, not the network', () => {
     expect(isTransportFailure(new TypeError("Cannot read properties of undefined (reading 'map')"))).toBe(false);
     expect(isTransportFailure(new TypeError("Cannot read properties of undefined (reading 'length')"))).toBe(false);
@@ -113,7 +113,7 @@ describe('in-band JSON-RPC errors, whatever NODE_ENV is', () => {
   );
 
   it('passes a result through untouched', async () => {
-    const result = await rpcAnswering({ jsonrpc: '2.0', result: 506_479_059 }).getSlot().send();
-    expect(result).toBe(506_479_059n);
+    const result = await rpcAnswering({ jsonrpc: '2.0', result: 123_456_789 }).getSlot().send();
+    expect(result).toBe(123_456_789n);
   });
 });

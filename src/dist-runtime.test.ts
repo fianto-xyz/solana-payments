@@ -14,6 +14,6 @@ describe.runIf(existsSync(dist))('built dist/', () => {
     const code = readFileSync(join(dist, f), 'utf8');
     expect(code).not.toMatch(/\bBuffer\b/);
     expect(code).not.toMatch(/\bprocess\./);
-    expect(code).not.toMatch(/require\(["']node:|from ["']node:/);
+    expect(code).not.toMatch(/["']node:/);
   });
 });

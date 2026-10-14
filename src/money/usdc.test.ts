@@ -40,12 +40,12 @@ describe('formatUsdcAmount', () => {
 });
 
 describe('isAmountInRange', () => {
-  const bounds = { min: 10_000n, max: 1_000_000_000_000n };
+  const bounds = { min: 5_000n, max: 250_000_000_000n };
   it.each([
-    [9_999n, false],
-    [10_000n, true],
-    [1_000_000_000_000n, true],
-    [1_000_000_000_001n, false],
+    [4_999n, false],
+    [5_000n, true],
+    [250_000_000_000n, true],
+    [250_000_000_001n, false],
   ])('%s → %s', (amount, expected) => {
     expect(isAmountInRange(amount, bounds)).toBe(expected);
   });

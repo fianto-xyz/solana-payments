@@ -8,8 +8,8 @@ const FIELDS = {
   version: SIWS_VERSION,
   chainId: 'mainnet',
   nonce: '0123456789abcdef0123456789abcdef',
-  issuedAt: '2026-09-22T10:00:00.000Z',
-  expirationTime: '2026-09-22T10:05:00.000Z',
+  issuedAt: '2030-01-01T00:00:00.000Z',
+  expirationTime: '2030-01-01T00:05:00.000Z',
 };
 
 describe('renderSiwsMessage', () => {
@@ -25,8 +25,8 @@ describe('renderSiwsMessage', () => {
         'Version: 1',
         'Chain ID: mainnet',
         'Nonce: 0123456789abcdef0123456789abcdef',
-        'Issued At: 2026-09-22T10:00:00.000Z',
-        'Expiration Time: 2026-09-22T10:05:00.000Z',
+        'Issued At: 2030-01-01T00:00:00.000Z',
+        'Expiration Time: 2030-01-01T00:05:00.000Z',
       ].join('\n'),
     );
   });
@@ -51,8 +51,8 @@ describe('renderSiwsMessage validation', () => {
         'Version: 1',
         'Chain ID: mainnet',
         'Nonce: 0123456789abcdef0123456789abcdef',
-        'Issued At: 2026-09-22T10:00:00.000Z',
-        'Expiration Time: 2026-09-22T10:05:00.000Z',
+        'Issued At: 2030-01-01T00:00:00.000Z',
+        'Expiration Time: 2030-01-01T00:05:00.000Z',
       ].join('\n'),
     );
   });

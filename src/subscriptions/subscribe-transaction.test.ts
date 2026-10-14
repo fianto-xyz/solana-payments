@@ -49,7 +49,7 @@ import { COMPUTE_BUDGET_PROGRAM_ADDRESS, TOKEN_PROGRAM_ADDRESS } from '../solana
 const MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 const BLOCKHASH = 'GHtXQBsoZHVnNFa9YevAzFr17DJjgHXk3ycTKD5xD3Zi';
 /** A DIFFERENT, valid blockhash — not a near-miss of the one above. */
-const OTHER_BLOCKHASH = 'BXGYJLMVYsBsBTsUW5BGJjvUqrXJn8FZeNyQYD5oAnCk';
+const OTHER_BLOCKHASH = '11111111111111111111111111111111';
 
 /**
  * Seven distinct, VALID addresses for the "exactly one field differs" cases. Every one is

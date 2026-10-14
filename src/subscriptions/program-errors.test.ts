@@ -14,8 +14,7 @@ describe('programErrorCodeOf', () => {
 
   // What a REAL cluster returns: @solana/kit parses every JSON number in `err` as a bigint.
   // Observed on solana-test-validator 4.0.1 against the mainnet program:
-  // `{ InstructionError: [2n, { Custom: 400n }] }`. A hand-built error uses plain
-  // numbers, which is how every other test here missed that no real code was ever read.
+  // `{ InstructionError: [2n, { Custom: 400n }] }`. A hand-built error uses plain numbers.
   it('reads the bigint shape a real RPC returns', () => {
     expect(programErrorCodeOf({ InstructionError: [2n, { Custom: 400n }] })).toEqual({
       instructionIndex: 2,
@@ -56,8 +55,7 @@ describe('programErrorCodeOf', () => {
 describe('the pinned error codes', () => {
   it('matches the numbers the program declares — all sixteen', () => {
     // Every entry SUBSCRIPTION_PROGRAM_ERRORS carries, not a subset: a renumbering of any one
-    // of the three previously unpinned here (NOT_SIGNER, INVALID_DELEGATE_PDA,
-    // DELEGATION_EXPIRED) is now a failing assertion, not silent.
+    // is a failing assertion, not silent.
     expect(SUBSCRIPTION_PROGRAM_ERRORS).toEqual({
       NOT_SIGNER: 100,
       INVALID_DELEGATE_PDA: 126,
@@ -125,7 +123,7 @@ describe('the pinned error codes', () => {
   });
 });
 
-describe('programErrorMessage for a token-program code (load item 13)', () => {
+describe('programErrorMessage for a token-program code', () => {
   it("names an SPL Token error the program's CPI returned, never 'Unknown subscriptions program error'", () => {
     // A pull after the payer revoked the approval: the token program's OwnerMismatch.
     expect(programErrorMessage(4)).toBe('SPL Token error 4: Owner does not match');

@@ -23,11 +23,11 @@ describe('computeFee', () => {
     expect(computeFee(99n, 1).feeAmount).toBe(0n);
   });
 
-  it('handles the top of the range without losing precision at the top of the range', () => {
-    expect(computeFee(1_000_000_000_000n, 1000)).toEqual({
-      feeBps: 1000,
-      feeAmount: 100_000_000_000n,
-      totalAmount: 1_100_000_000_000n,
+  it('keeps full precision for a large amount and a large fee', () => {
+    expect(computeFee(9_999_999_999_999n, 2500)).toEqual({
+      feeBps: 2500,
+      feeAmount: 2_499_999_999_999n,
+      totalAmount: 12_499_999_999_998n,
     });
   });
 });

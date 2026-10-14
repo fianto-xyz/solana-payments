@@ -223,9 +223,9 @@ describe('decodeAuthorityAccount', () => {
     initId: 99n,
     bump: 254,
   };
-  /** Rent payer is part of the on-chain layout but dropped by OnchainAuthorityAccount (the
-   *  brief's declared shape) — distinct from every AUTHORITY field so it can never be mistaken
-   *  for one of them if a future field-path bug leaks it through. */
+  /** Rent payer is part of the on-chain layout but not of OnchainAuthorityAccount — distinct
+   *  from every AUTHORITY field so it can never be mistaken for one of them if a future
+   *  field-path bug leaks it through. */
   const RENT_PAYER = '11111111111111111111111111111112';
 
   function encodeAuthorityAccountForTests(authority: OnchainAuthorityAccount): string {

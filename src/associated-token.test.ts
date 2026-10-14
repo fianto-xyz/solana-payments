@@ -9,7 +9,7 @@ const MAINNET_USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 const DEVNET_USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 
 describe('deriveAssociatedTokenAddress', () => {
-  // Fixed vectors: these owners are the public keys of the all-1s, all-2s and all-3s
+  // Fixed vectors: these owners are the public keys of the all-1s, all-2s, all-3s and all-4s
   // 32-byte private keys, so anyone can regenerate them.
   it.each([
     ['AKnL4NNf3DGWZJS6cPknBuEGnVsV4A4m5tgebLHaRSZ9', MAINNET_USDC, '3wvJdyFnGvaMWpbq93NU91SggiVRveULUXL6iX5VZDGP'],
@@ -40,7 +40,7 @@ describe('deriveAssociatedTokenAddress', () => {
 
 describe('associatedTokenSearchSteps', () => {
   it('is 255 minus the bump the token account address was found with', async () => {
-    for (const owner of ['GyGKxMyg1p9SsHfm15MkNUu1u9TN2JtTspcdmrtGUdse', 'E1f9MrEDU2FAFKHpAYRCgGR4rB7ALEeEzG2iLCM4K2N8']) {
+    for (const owner of ['GyGKxMyg1p9SsHfm15MkNUu1u9TN2JtTspcdmrtGUdse', 'EdmxWPmx2WH6WgFfTdu9xfkYf3k1g5wD1zccTVySEEh1']) {
       const steps = await associatedTokenSearchSteps(owner, MAINNET_USDC);
       const [ata, bump] = await getProgramDerivedAddress({
         programAddress: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
@@ -53,5 +53,6 @@ describe('associatedTokenSearchSteps', () => {
       expect(steps).toBe(255 - bump);
       expect(await deriveAssociatedTokenAddress(owner, MAINNET_USDC)).toBe(ata);
     }
+    expect(await associatedTokenSearchSteps('EdmxWPmx2WH6WgFfTdu9xfkYf3k1g5wD1zccTVySEEh1', MAINNET_USDC)).toBe(1);
   });
 });
