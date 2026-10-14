@@ -18,8 +18,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:secrets
       - run: pnpm lint
-      - run: pnpm typecheck
       - run: pnpm build
+      - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm check:package
       - run: pnpm check:readme
