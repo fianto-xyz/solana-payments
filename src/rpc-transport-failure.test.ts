@@ -20,7 +20,7 @@ describe('isTransportFailure', () => {
   });
 
   // Every TypeError used to count as "the provider did not answer", so a bug in the caller's
-  // own code (or a library's) moved to the fallback, or read as "silent", instead of surfacing.
+  // own code (or a library's) moved to the fallback, or was misread as an outage, instead of surfacing.
   it('is false for a TypeError that is a bug, not the network', () => {
     expect(isTransportFailure(new TypeError("Cannot read properties of undefined (reading 'map')"))).toBe(false);
     expect(isTransportFailure(new TypeError("Cannot read properties of undefined (reading 'length')"))).toBe(false);
@@ -55,7 +55,7 @@ describe('isTransportFailure', () => {
 
   it('is false for an answer the node actually gave', () => {
     // A real JSON-RPC error means the node is up and disagrees. Asking a second provider
-    // the same question would get the same answer and burn the budget.
+    // the same question would get the same answer and waste a call.
     expect(isTransportFailure(new Error('Invalid param: not a Token account'))).toBe(false);
   });
 });

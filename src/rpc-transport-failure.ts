@@ -30,7 +30,7 @@ import { SolanaRpcBusyError } from './rpc.js';
  * -32016 lagging, -32601 a method its plan does not offer, and every code outside Solana's list
  * — -32000 Unauthorized, -32029 Too Many Requests, 429/403 in the body. An
  * allow-list of answers, not a deny-list of outages, so an unknown provider code can only ever
- * cost a fallback hop or an undecided tick, never a verdict.
+ * cost a fallback hop or an undecided attempt, never a verdict.
  */
 const ANSWER_CODES: ReadonlySet<number> = new Set([
   SOLANA_ERROR__JSON_RPC__SERVER_ERROR_SEND_TRANSACTION_PREFLIGHT_FAILURE,
@@ -106,7 +106,7 @@ const NETWORK_ERROR_CODE = /^(UND_ERR_|E[A-Z]+$)/;
  * A `TypeError` that fetch itself threw: undici's `TypeError('fetch failed')` (its
  * `cause` names the network error) or `TypeError('terminated')` for a body cut off mid-read.
  * Any other TypeError is a bug — the caller's, or a library's — and must surface as one, not as an
- * outage that quietly moves to the fallback or reads as "silent".
+ * outage that quietly moves to the fallback or is misread as an outage.
  */
 function isFetchTypeError(error: TypeError): boolean {
   if (error.message === 'fetch failed' || error.message === 'terminated') return true;
@@ -141,7 +141,7 @@ export function isTransportFailure(error: unknown): boolean {
  * at all. This is deliberately distinct from a `false` answer: `false` means "cannot currently
  * conclude unknown everywhere" (either because a provider knows it, or because at least one
  * provider that might know it did not answer) and is safe to treat as "try again later". This
- * error means NOTHING answered, so the caller has no information to act on this tick — it
+ * error means NOTHING answered, so the caller has no information to act on this attempt — it
  * should retry, never conclude from it that the transaction landed or was dropped.
  */
 export class SolanaProviderUnavailableError extends Error {
