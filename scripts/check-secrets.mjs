@@ -6,7 +6,7 @@ const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' }).split('\n'
 const bad = [];
 for (const f of files) {
   if (/(^|\/)\.env/.test(f)) bad.push(`${f}: env file`);
-  if (f.startsWith('src/testdata/') || f === 'pnpm-lock.yaml') continue;
+  if (f === 'src/testdata/devnet-rpc-errors.json' || f === 'pnpm-lock.yaml') continue;
   readFileSync(f, 'utf8').split('\n').forEach((line, i) => {
     if (/[1-9A-HJ-NP-Za-km-z]{64,}/.test(line)) bad.push(`${f}:${i + 1}: long base58 string`);
   });
